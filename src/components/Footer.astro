@@ -1,0 +1,17 @@
+---
+import { profile } from '../content/profile'
+const year = new Date().getFullYear()
+---
+
+<footer class="footer">
+  <div class="container footer__quote-wrap">
+    <blockquote class="footer__quote">
+      "{profile.quote.text}"
+      <cite class="footer__cite mono">— {profile.quote.author}</cite>
+    </blockquote>
+  </div>
+  <div class="footer__inner">
+    <span>© {year} {profile.name}</span>
+    <span>{profile.location}</span>
+  </div>
+</footer>

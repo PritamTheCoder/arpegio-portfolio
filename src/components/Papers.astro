@@ -1,0 +1,27 @@
+---
+import { papers, papersEmptyNote } from '../content/papers'
+import Section from './Section.astro'
+import Reveal from './Reveal.astro'
+---
+
+<Section id="papers" eyebrow="04 — Research" title="Research Papers & Manuscripts">
+  {papers.length === 0 ? (
+    <Reveal>
+      <p class="empty-note">{papersEmptyNote}</p>
+    </Reveal>
+  ) : (
+    <div>
+      {papers.map((paper, i) => (
+        <Reveal as="article" delay={i * 60} class="paper">
+          <span class:list={['badge', { 'badge--progress': paper.status === 'In Progress' }]}>
+            {paper.status}
+          </span>
+          <p class="paper__title">
+            {paper.title}
+            {paper.note && <span class="paper__note">{paper.note}</span>}
+          </p>
+        </Reveal>
+      ))}
+    </div>
+  )}
+</Section>

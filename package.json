@@ -1,0 +1,25 @@
+{
+  "name": "pritam-thapa-portfolio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Portfolio of Pritam Thapa — AI Research Engineer (Astro)",
+  "scripts": {
+    "dev": "astro dev",
+    "prebuild": "node scripts/clean-dist.mjs",
+    "build": "astro build",
+    "preview": "astro preview",
+    "sync": "astro sync",
+    "astro": "astro",
+    "optimize:images": "node scripts/optimize-images.mjs"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.2.4",
+    "@astrojs/rss": "^4.0.11",
+    "@astrojs/sitemap": "^3.3.0",
+    "@iconify-json/lucide": "^1.2.39",
+    "astro": "^5.7.0",
+    "astro-icon": "^1.1.5",
+    "sharp": "^0.34.1"
+  }
+}

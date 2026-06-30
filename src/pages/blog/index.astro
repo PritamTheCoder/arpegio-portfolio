@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content'
+import { Icon } from 'astro-icon/components'
+import Base from '../../layouts/Base.astro'
+import Reveal from '../../components/Reveal.astro'
+import { postsEmptyNote } from '../../content/posts'
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+)
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+---
+
+<Base
+  title="Writing"
+  description="Research notes, paper breakdowns, experiment logs, and AI engineering write-ups by Pritam Thapa."
+>
+  <div class="container page-head">
+    <a class="back-link" href="/"><Icon name="lucide:arrow-left" /> Home</a>
+    <h1 class="page-head__title">Writing</h1>
+    <p class="page-head__lead">
+      Paper breakdowns, experiment notes, implementation lessons, and AI engineering
+      write-ups — thinking, not just output.
+    </p>
+  </div>
+
+  <div class="container" style="padding-bottom: var(--s-9)">
+    {posts.length === 0 ? (
+      <p class="empty-note">{postsEmptyNote}</p>
+    ) : (
+      <div class="postlist">
+        {posts.map((post, i) => (
+          <Reveal as="article" delay={i * 50} class="postlist__item">
+            <a class="postlist__title" href={`/blog/${post.id}`}>{post.data.title}</a>
+            <div class="postlist__meta">
+              <span>{post.data.category}</span>
+              <span>·</span>
+              <span>{fmt(post.data.pubDate)}</span>
+            </div>
+            <p class="postlist__excerpt">{post.data.description}</p>
+          </Reveal>
+        ))}
+      </div>
+    )}
+  </div>
+</Base>

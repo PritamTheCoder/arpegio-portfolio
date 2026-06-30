@@ -1,0 +1,89 @@
+---
+import { Image } from 'astro:assets'
+import { Icon } from 'astro-icon/components'
+import {
+  featuredProjects,
+  moreProjects,
+  researchDirections,
+} from '../content/projects'
+import Section from './Section.astro'
+import Reveal from './Reveal.astro'
+import Chip from './Chip.astro'
+---
+
+<Section id="projects" eyebrow="03 — Selected Work" title="Projects">
+  <div class="projects__grid">
+    {featuredProjects.map((project, i) => (
+      <Reveal delay={(i % 2) * 80}>
+        <article class:list={['card', { 'card--media': project.image }]}>
+          {project.image && (
+            <div class="card__media">
+              <Image
+                src={project.image}
+                alt={`${project.name} preview`}
+                widths={[400, 800]}
+                sizes="(max-width: 680px) 90vw, 420px"
+                loading="lazy"
+              />
+            </div>
+          )}
+          <div class="card__head">
+            <div>
+              <h3 class="card__title">{project.name}</h3>
+              {project.kind && <span class="card__kind mono">{project.kind}</span>}
+            </div>
+            {project.status && <span class="card__status mono">{project.status}</span>}
+          </div>
+          <p class="card__summary">{project.summary}</p>
+          <Chip items={project.tags} />
+          <div class="card__links">
+            {project.links.map((link) =>
+              link.href ? (
+                <a class="inline-link" href={link.href} target="_blank" rel="noreferrer">
+                  <Icon name="lucide:external-link" /> {link.label}
+                </a>
+              ) : (
+                <span class="inline-link" style="opacity:0.55">{link.label}</span>
+              )
+            )}
+          </div>
+        </article>
+      </Reveal>
+    ))}
+  </div>
+
+  <Reveal><h3 class="subgroup-title">More Projects</h3></Reveal>
+  <div class="projects__grid">
+    {moreProjects.map((project, i) => (
+      <Reveal delay={(i % 2) * 80}>
+        <article class="card">
+          <div class="card__head">
+            <div>
+              <h3 class="card__title">{project.name}</h3>
+              {project.kind && <span class="card__kind mono">{project.kind}</span>}
+            </div>
+            {project.status && <span class="card__status mono">{project.status}</span>}
+          </div>
+          <p class="card__summary">{project.summary}</p>
+          <Chip items={project.tags} />
+          <div class="card__links">
+            {project.links.map((link) =>
+              link.href ? (
+                <a class="inline-link" href={link.href} target="_blank" rel="noreferrer">
+                  <Icon name="lucide:external-link" /> {link.label}
+                </a>
+              ) : (
+                <span class="inline-link" style="opacity:0.55">{link.label}</span>
+              )
+            )}
+          </div>
+        </article>
+      </Reveal>
+    ))}
+  </div>
+
+  <Reveal>
+    <h3 class="subgroup-title">Current Research Directions</h3>
+    <Chip items={researchDirections} accent />
+  </Reveal>
+</Section>

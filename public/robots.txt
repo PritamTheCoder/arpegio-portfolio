@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Update the domain to match astro.config.mjs `site` / src/consts.ts SITE_URL.
+Sitemap: https://pritam-thapa.example.com/sitemap-index.xml

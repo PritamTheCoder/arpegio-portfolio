@@ -1,0 +1,20 @@
+---
+import { stack } from '../content/stack'
+import Section from './Section.astro'
+import Reveal from './Reveal.astro'
+---
+
+<Section id="stack" eyebrow="06 — Toolkit" title="Stack">
+  <div class="stack__grid">
+    {stack.map((group, i) => (
+      <Reveal delay={i * 50}>
+        <div class="stack__group">
+          <p class="stack__label">{group.label}</p>
+          <div class="chip-row">
+            {group.items.map((item) => <span class="chip">{item}</span>)}
+          </div>
+        </div>
+      </Reveal>
+    ))}
+  </div>
+</Section>

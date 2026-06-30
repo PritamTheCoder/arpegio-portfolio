@@ -1,0 +1,85 @@
+---
+title: "Why MobileViT for cytology: accuracy vs. footprint"
+description: "Choosing a lightweight vision transformer for cervical cytology classification — the accuracy, latency, and model-size trade-offs that make on-device screening viable."
+pubDate: 2026-06-20
+category: "Experiment Notes"
+tags: ["mobilevit", "cytology", "medical-ai", "edge-ai"]
+draft: false
+---
+
+A write-up on why **MobileViT-S** ended up as the classification backbone for the
+cervical cytology pipeline — and why "what's the most accurate model" was the wrong
+question to start with.
+
+## The need for edge AI in pathology
+
+Cervical cancer screening matters most in low- and middle-income regions, where access
+to cloud GPUs or powerful on-prem clusters is limited. If AI-assisted screening is going
+to be democratized, the models underneath have to be **computationally efficient without
+giving up diagnostic accuracy**.
+
+So the design target wasn't a leaderboard. It was **on-device / edge inference** —
+a model that could plausibly be embedded into a digital microscope or run on a local
+clinic's workstation, with no cloud dependency.
+
+## Why MobileViT-S?
+
+MobileViT-S (Small) is a deliberate trade-off between model size, inference latency, and
+accuracy. It works because it combines the two inductive biases this task needs:
+
+- **Convolutions (CNN bias)** — efficiently process *local* features: edges, textures,
+  membrane boundaries.
+- **Transformer attention** — let distant parts of the image inform each other, capturing
+  the *global* shape context needed to separate subtle cellular anomalies.
+
+For cytology crops — small, texture-heavy, where both fine local detail and overall cell
+morphology matter — that hybrid held up better than a plain ViT at the same size.
+
+### Efficiency by the numbers
+
+| Model | Parameters | Relative size |
+| --- | --- | --- |
+| **MobileViT-S** | **~5.6M** | **1×** |
+| ResNet-50 | ~25M | ~4× larger |
+| ViT-Base | ~86M | ~15× larger |
+
+- **Model size:** < 25 MB (FP32)
+- **Inference:** real-time on standard mobile-grade CPUs or entry-level GPUs
+
+Despite being a fraction of the size, MobileViT-S *approaches* the accuracy of these much
+larger backbones on this task — which is the whole point.
+
+## Performance and clinical relevance
+
+Screening is a sensitivity-first problem: missing a lesion is far costlier than a false
+alarm that gets a second look. On evaluation, the model reached:
+
+- **92.6%** overall accuracy
+- **98%** recall on **dyskeratotic** cells (high-grade lesions)
+- **93%** recall on **koilocytotic** cells (low-grade lesions)
+
+The high recall on high-grade lesions is the metric that actually matters for a screening
+aid — those are the cases you cannot afford to miss.
+
+### The edge advantage
+
+Running this on-device, rather than shipping slides to a server, buys three things that
+matter in a clinic:
+
+- **Privacy** — patient data never leaves the clinic.
+- **Latency** — no network round-trip; results appear as the slide is scanned.
+- **Cost** — runs on affordable hardware (Jetson Nano, a Raspberry Pi with an
+  accelerator, or a standard office laptop).
+
+## Takeaway
+
+> High-performance medical AI doesn't require massive compute. Optimizing for efficiency
+> (~5.6M params) is what turns a model from a benchmark result into a *deployable*
+> screening tool.
+
+For per-instance, high-volume medical inference, the real question isn't "what's the most
+accurate model" — it's "what's the most accurate model that fits the latency, privacy,
+and hardware budget of the place it has to run."
+
+More on the Bethesda-aligned slide-level aggregation step — turning per-cell predictions
+into a structured risk assessment — in a future post.

@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content'
+import { Icon } from 'astro-icon/components'
+import { postsEmptyNote } from '../content/posts'
+import Section from './Section.astro'
+import Reveal from './Reveal.astro'
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3)
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+---
+
+<Section id="blog" eyebrow="05 — Writing" title="Blog">
+  {posts.length === 0 ? (
+    <Reveal><p class="empty-note">{postsEmptyNote}</p></Reveal>
+  ) : (
+    <div>
+      {posts.map((post, i) => (
+        <Reveal as="article" delay={i * 60} class="post">
+          <a class="post__title" href={`/blog/${post.id}`}>
+            {post.data.title} <Icon name="lucide:arrow-up-right" />
+          </a>
+          <div class="post__meta mono">
+            <span>{post.data.category}</span>
+            <span>·</span>
+            <span>{fmt(post.data.pubDate)}</span>
+          </div>
+          <p class="post__excerpt">{post.data.description}</p>
+        </Reveal>
+      ))}
+      <Reveal>
+        <p style="margin-top: var(--s-5)">
+          <a class="inline-link" href="/blog">All posts <Icon name="lucide:arrow-right" /></a>
+        </p>
+      </Reveal>
+    </div>
+  )}
+</Section>

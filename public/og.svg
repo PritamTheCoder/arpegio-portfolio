@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#0b0c0e"/>
+  <circle cx="1010" cy="150" r="320" fill="#6ee7b7" opacity="0.06"/>
+  <g transform="translate(80 150)" stroke="#6ee7b7" stroke-width="4"
+     stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M24 24 10 10M24 24l14-12M24 24v14" opacity="0.7"/>
+    <circle cx="24" cy="24" r="6.4" fill="#6ee7b7" stroke="none"/>
+    <circle cx="10" cy="10" r="4.4"/>
+    <circle cx="38" cy="12" r="4.4"/>
+    <circle cx="24" cy="40" r="4.4"/>
+  </g>
+  <text x="80" y="300" font-family="'Space Grotesk', system-ui, sans-serif" font-size="76" font-weight="700" fill="#e8e9ec">Pritam Thapa</text>
+  <text x="82" y="372" font-family="'JetBrains Mono', monospace" font-size="34" font-weight="500" fill="#6ee7b7">AI Research Engineer</text>
+  <text x="80" y="452" font-family="'Inter', system-ui, sans-serif" font-size="30" fill="#9aa0a8">Building applied AI systems through research,</text>
+  <text x="80" y="494" font-family="'Inter', system-ui, sans-serif" font-size="30" fill="#9aa0a8">computer vision, and practical model engineering.</text>
+  <rect x="80" y="540" width="44" height="6" rx="3" fill="#6ee7b7"/>
+</svg>

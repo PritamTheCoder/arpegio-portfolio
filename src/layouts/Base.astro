@@ -1,0 +1,142 @@
+---
+import '../styles/tokens.css'
+import '../styles/global.css'
+import SEO from '../components/SEO.astro'
+import Header from '../components/Header.astro'
+import Footer from '../components/Footer.astro'
+
+interface Props {
+  title?: string
+  description?: string
+  image?: string
+  type?: 'website' | 'article'
+  publishedDate?: Date
+  modifiedDate?: Date
+  jsonLd?: Record<string, unknown>
+}
+const props = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b0c0e" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Pritam Thapa — Blog"
+      href="/rss.xml"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <SEO {...props} />
+
+    {/* Set theme + has-js before paint to avoid flash / no-JS hiding */}
+    <script is:inline>
+      (function () {
+        var d = document.documentElement
+        d.classList.add('has-js')
+        try {
+          var t = localStorage.getItem('theme')
+          if (t !== 'light' && t !== 'dark') {
+            t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+          }
+          d.setAttribute('data-theme', t)
+        } catch (e) {}
+      })()
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      const root = document.documentElement
+
+      // Theme toggle
+      const themeBtn = document.getElementById('theme-toggle')
+      const themeMeta = document.querySelector('meta[name="theme-color"]')
+      themeBtn?.addEventListener('click', () => {
+        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'
+        root.setAttribute('data-theme', next)
+        try {
+          localStorage.setItem('theme', next)
+        } catch (e) {}
+        themeMeta?.setAttribute('content', next === 'dark' ? '#0b0c0e' : '#fafafa')
+      })
+
+      // Mobile nav
+      const nav = document.getElementById('primary-nav')
+      const navToggle = document.getElementById('nav-toggle')
+      navToggle?.addEventListener('click', () => {
+        const open = nav?.classList.toggle('is-open')
+        navToggle.setAttribute('aria-expanded', String(!!open))
+      })
+      nav?.querySelectorAll('a').forEach((a) =>
+        a.addEventListener('click', () => {
+          nav.classList.remove('is-open')
+          navToggle?.setAttribute('aria-expanded', 'false')
+        })
+      )
+
+      // Sticky header border on scroll
+      const header = document.querySelector('.header')
+      const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 8)
+      onScroll()
+      window.addEventListener('scroll', onScroll, { passive: true })
+
+      // Scroll reveal
+      const revealIO = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('is-visible')
+              revealIO.unobserve(e.target)
+            }
+          })
+        },
+        { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+      )
+      document.querySelectorAll('.reveal').forEach((el) => revealIO.observe(el))
+
+      // Scroll spy (homepage anchor nav)
+      const links = Array.from(
+        document.querySelectorAll<HTMLAnchorElement>('.nav__link')
+      ).filter((l) => l.getAttribute('href')?.includes('#'))
+      const idFor = (l: HTMLAnchorElement) => l.getAttribute('href')!.split('#')[1]
+      const sections = links
+        .map((l) => document.getElementById(idFor(l)))
+        .filter((el): el is HTMLElement => !!el)
+      if (sections.length) {
+        const spy = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                links.forEach((l) =>
+                  l.classList.toggle('is-active', idFor(l) === e.target.id)
+                )
+              }
+            })
+          },
+          { rootMargin: '-45% 0px -50% 0px', threshold: [0, 0.25, 0.5] }
+        )
+        sections.forEach((s) => spy.observe(s))
+      }
+    </script>
+  </body>
+</html>

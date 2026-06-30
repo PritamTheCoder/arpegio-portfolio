@@ -1,0 +1,15 @@
+---
+import { profile } from '../content/profile'
+import Section from './Section.astro'
+import Reveal from './Reveal.astro'
+---
+
+<Section id="about" eyebrow="01 — About" title="About">
+  <Reveal>
+    <p class="about__lead">{profile.about}</p>
+    <p class="about__current">
+      <span class="dot" aria-hidden="true"></span>
+      {profile.current}
+    </p>
+  </Reveal>
+</Section>

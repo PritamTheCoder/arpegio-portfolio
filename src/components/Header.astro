@@ -1,0 +1,43 @@
+---
+import { Icon } from 'astro-icon/components'
+import { navItems, profile } from '../content/profile'
+import Logo from './Logo.astro'
+
+// Nav anchors point to the homepage sections. On sub-pages (e.g. /blog) we prefix
+// with "/" so the links still resolve back to the homepage anchors.
+const onHome = Astro.url.pathname === '/'
+const hrefFor = (id: string) => (onHome ? `#${id}` : `/#${id}`)
+---
+
+<header class="header">
+  <div class="header__inner">
+    <a class="brand" href={onHome ? '#top' : '/'} aria-label={`${profile.name} — home`}>
+      <span class="brand__mark"><Logo /></span>
+    </a>
+
+    <nav class="nav" id="primary-nav" aria-label="Primary">
+      {navItems.map((item) => (
+        <a class="nav__link" href={hrefFor(item.id)}>{item.label}</a>
+      ))}
+      <a class="nav__link" href="/blog">Writing</a>
+    </nav>
+
+    <div class="header__actions">
+      <button id="theme-toggle" type="button" class="icon-btn" aria-label="Toggle color theme">
+        <Icon name="lucide:sun" class="theme-icon theme-icon--sun" />
+        <Icon name="lucide:moon" class="theme-icon theme-icon--moon" />
+      </button>
+      <button
+        id="nav-toggle"
+        type="button"
+        class="icon-btn nav-toggle"
+        aria-label="Toggle menu"
+        aria-expanded="false"
+        aria-controls="primary-nav"
+      >
+        <Icon name="lucide:menu" class="ntg-icon ntg-menu" />
+        <Icon name="lucide:x" class="ntg-icon ntg-x" />
+      </button>
+    </div>
+  </div>
+</header>

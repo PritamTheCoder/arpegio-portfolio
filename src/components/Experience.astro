@@ -1,0 +1,31 @@
+---
+import { experience } from '../content/experience'
+import Section from './Section.astro'
+import Reveal from './Reveal.astro'
+import Chip from './Chip.astro'
+---
+
+<Section id="experience" eyebrow="02 — Experience" title="Experience">
+  <div class="timeline">
+    {experience.map((xp, i) => (
+      <Reveal as="article" delay={i * 60} class="xp">
+        <div>
+          <span class="xp__period mono">{xp.period}</span>
+          <span class="xp__sub">{xp.sub}</span>
+        </div>
+        <div>
+          <h3 class="xp__role">
+            {xp.role} <span class="xp__org">— {xp.org}</span>
+          </h3>
+          {xp.intro && <p class="xp__intro">{xp.intro}</p>}
+          <ul class="xp__bullets">
+            {xp.bullets.map((b) => <li>{b}</li>)}
+          </ul>
+          <div class="xp__tag">
+            <Chip items={xp.focus} />
+          </div>
+        </div>
+      </Reveal>
+    ))}
+  </div>
+</Section>

@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro'
+import Hero from '../components/Hero.astro'
+import About from '../components/About.astro'
+import Experience from '../components/Experience.astro'
+import Projects from '../components/Projects.astro'
+import Papers from '../components/Papers.astro'
+import BlogPreview from '../components/BlogPreview.astro'
+import Stack from '../components/Stack.astro'
+import Contact from '../components/Contact.astro'
+import { profile } from '../content/profile'
+import { SITE_URL } from '../consts'
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  jobTitle: profile.role,
+  url: SITE_URL,
+  email: `mailto:${profile.links.email}`,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Kathmandu',
+    addressCountry: 'NP',
+  },
+  sameAs: [profile.links.github, profile.links.linkedin],
+}
+---
+
+<Base jsonLd={jsonLd}>
+  <Hero />
+  <About />
+  <Experience />
+  <Projects />
+  <Papers />
+  <BlogPreview />
+  <Stack />
+  <Contact />
+</Base>

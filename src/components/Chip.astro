@@ -1,0 +1,11 @@
+---
+interface Props {
+  items: string[]
+  accent?: boolean
+}
+const { items, accent = false } = Astro.props
+---
+
+<div class="chip-row">
+  {items.map((item) => <span class:list={['chip', { 'chip--accent': accent }]}>{item}</span>)}
+</div>

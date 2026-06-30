@@ -1,0 +1,102 @@
+---
+title: "YOLO-Forge: turning dataset prep into a real pipeline"
+description: "Most of an object detection project is data work, not modeling. YOLO-Forge treats that messy 80% as a typed, repeatable pipeline: scan, convert, repair, augment, split, report."
+pubDate: 2026-06-13
+category: "AI Engineering"
+tags: ["yolo", "data-engineering", "object-detection", "pipelines"]
+draft: false
+---
+
+Most of the work in an object detection project is not the model. It is the data:
+collecting it, fixing labels, normalizing formats, splitting it sensibly, and actually
+understanding what is inside it. That part is unglamorous, easy to do badly, and usually
+lives as a pile of one-off scripts that nobody can rerun six months later.
+
+YOLO-Forge is my attempt to treat that work as proper engineering. It is a dataset
+pipeline for training robust detectors (YOLOv5, v8, v11) that turns raw, inconsistent
+data into a clean, split, training-ready dataset, with a report that tells you what you
+actually have.
+
+## A sequential, typed pipeline
+
+The whole thing runs as six ordered stages. Each one has a single responsibility and
+hands a known-good structure to the next, so a run is reproducible rather than a sequence
+of manual fixes.
+
+| Stage | What it does |
+| --- | --- |
+| **Scan** | Validates directory structure, detects missing labels, and reports initial dataset health. |
+| **Convert** | Normalizes varied inputs (nested folders, flat files, COCO) into a standard YOLO layout. |
+| **Repair** | Fixes invalid labels, clamps coordinates to `[0,1]`, and drops broken or corrupt files. |
+| **Augment** | Generates synthetic samples with localized, box-aware transforms (the core of the project). |
+| **Split** | Partitions into train, validation, and test sets by configurable ratios. |
+| **Report** | Produces an HTML report, class-distribution histograms, and health metrics. |
+
+Which stages run is configuration, not code. A pipeline config turns each step on or off
+and points at the augmentation profile, so the same tool handles "just clean and split
+this" and "clean, augment heavily, then split" without touching the source.
+
+```yaml
+steps:
+  scan: true
+  convert_to_yolo: true
+  repair_labels: true
+  augment:
+    enabled: true
+    config: "configs/config_aug_extreme.yaml"
+  split:
+    enabled: true
+    train: 0.8
+    val: 0.1
+    test: 0.1
+  report:
+    enabled: true
+```
+
+## Quality control, not just transforms
+
+Synthetic data is only useful if it stays valid, so the pipeline is opinionated about
+rejecting bad outputs. Repair normalizes every coordinate into range and removes
+degenerate geometry before anything downstream sees it. The augmentation stage has its
+own guard rails, including a black-frame threshold that discards any sample that ends up
+too dark to carry signal. The goal is simple: never let augmentation quietly poison
+training with images the model should not learn from.
+
+Packaging matters here too. Running the pipeline in a container means a dataset prepared
+on my laptop is prepared the same way on a teammate's machine or in CI, with no
+environment drift.
+
+## Knowing your data before you train
+
+The stage I find most underrated is the report. Before spending GPU hours, you get an
+interactive HTML summary of the dataset:
+
+- Class balance, so you can see imbalance before it shows up as a confused model.
+- Bounding box aspect-ratio and area histograms, which directly inform anchor-box tuning.
+- A visual grid of augmented samples, so you can sanity-check that the synthetic data
+  looks like something the real world would produce.
+- Overall health metrics.
+
+Anchor tuning in particular is something people often skip and then wonder why small or
+oddly shaped objects underperform. Having the area and ratio distributions in front of
+you turns that from guesswork into a decision.
+
+## Small tools, not just one big button
+
+The pipeline is the main path, but the individual stages are also exposed on their own.
+You can convert COCO annotations to YOLO format, audit a dataset without changing a single
+file, or run a repair pass that writes a cleaned copy alongside the original. That makes
+YOLO-Forge useful for quick one-off fixes, not only full runs.
+
+## Takeaway
+
+Modeling gets the attention, but reliable detection lives or dies on data hygiene. Making
+dataset prep a typed, configurable, reproducible pipeline, with quality control and real
+reporting built in, removes a whole class of silent failures and frees you to spend your
+time on the parts that actually need judgment.
+
+The most interesting stage, the box-aware augmentation engine, deserves its own post.
+I wrote about how it simulates real-world noise without destroying context in
+[Bbox-aware augmentation](/blog/bbox-aware-augmentation).
+
+> Forge your data like steel. The harsher the training, the stronger the model.
